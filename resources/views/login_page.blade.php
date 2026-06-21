@@ -68,7 +68,7 @@
         
         <!-- SISI KIRI: Panduan Penggunaan Aplikasi -->
         <div class="left-side">
-            <h1>Chat cek webhook</h1>
+            <h1>Chat cek webhook coba</h1>
             <ul class="instruction-list">
                 <li>
                     <span class="number">1</span>
