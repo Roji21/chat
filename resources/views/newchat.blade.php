@@ -2,9 +2,9 @@
 <div class="side-panel">
     <!-- Bagian Atas Sisi Kiri: Info Profil Saya -->
     <div class="side-header">
-        <div class="avatar" id="ava_id"><img src="{{ asset('storage/img/'.$foto) }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
+        <div class="avatar" id="ava_id"><img src="{{ asset('storage/img/'.auth()->user()->photo) }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
         <div class="menu-user-container">
-            <div class="id-saya" onclick="toggleMenu(event)">ID: {{ $userSekarang }} ▾</div>
+            <div class="id-saya" onclick="toggleMenu(event)">ID: {{ auth()->user()->name }} ▾</div>
             <div class="dropdown-menu" id="dropdownMenu">
                 <a href="#" onclick="konfirmasiLogout(event)">Logout Account</a>
             </div>
@@ -54,8 +54,8 @@
 <!-- ================= SISI KANAN: RUANG OBROLAN UTAMA ================= -->
 <div class="main-chat-area">
     <div class="chat-header">
-        <div class="avatar" id="ava-id"><img src="{{ asset('storage/img/'.$fotolawan) }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
-        <div id="nama-lawan-bicara" class="nama-lawan">💬 {{ $lawanBicara }}</div>
+        <div class="avatar" id="ava-id"><img src="{{ asset('storage/img/default.jpeg') }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
+        <div id="nama-lawan-bicara" class="nama-lawan">💬 </div>
     </div>
     <div class="chat-messages" id="box_pesan">
         <!-- Pesan akan dimuat di sini melalui JavaScript -->

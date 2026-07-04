@@ -19,6 +19,14 @@ return new class extends Migration
             $table->string('name');
             $table->string('password');
             $table->text('about')->nullable();
+            $table->string('email_verified_at');
+            // === KOLOM TAMBAHAN UNTUK FITUR OTP (GAYA WHATSAPP) ===
+            // Menyimpan 6 digit kode OTP sementara
+            $table->string('otp_code', 6)->nullable();
+            // Batas waktu kedaluwarsa kode OTP (misal: 10 menit setelah dikirim)
+            $table->timestamp('otp_expires_at')->nullable();
+            // Kolom token untuk fitur "Remember Me" saat login
+            $table->rememberToken();
             $table->string('photo')->nullable();
             $table->timestamps();
         });
