@@ -89,7 +89,7 @@
         <div class="right-side">
             <div class="login-box">
                 <h2>Selamat Datang</h2>
-                <p>Silakan masuk ke akun Anda sadsASDs</p>
+                <p>Silakan masuk ke akun Anda</p>
 
                 <!-- Menampilkan Pesan Sukses Setelah Daftar Akun -->
                 @if(session('success'))
