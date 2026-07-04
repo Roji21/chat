@@ -86,11 +86,11 @@ class ChatController extends Controller
         $allPesan = DB::table('messages')
             ->where(function($query) use ($userAktif, $lawan) {
                 $query->where('sender', $userAktif)
-                      ->where('recipient', $lawan);
+                    ->where('recipient', $lawan);
             })
             ->orWhere(function($query) use ($userAktif, $lawan) {
                 $query->where('sender', $lawan)
-                      ->where('recipient', $userAktif);
+                    ->where('recipient', $userAktif);
             })
             ->orderBy('id', 'desc') // Ambil chat paling baru dulu
             ->skip($offset)
@@ -104,11 +104,11 @@ class ChatController extends Controller
             if ($pesan->recipient == $userAktif) {
                 $html .= '<div class="message-row saya">
                             <div class="bubble">' . e($pesan->message_text) . '<span class="time">' . $waktu . '</span></div>
-                          </div>';
+                        </div>';
             } else if($pesan->recipient == $lawan) {
                 $html .= '<div class="message-row bukan-saya">
                             <div class="bubble">' . e($pesan->message_text) . '<span class="time">' . $waktu . '</span></div>
-                          </div>';
+                        </div>';
             }
         }
 
@@ -195,7 +195,7 @@ class ChatController extends Controller
                 ->select(DB::raw('MAX(id) as id'))
                 ->where(function($query) use ($userAktif) {
                     $query->where('pengirim', $userAktif)
-                          ->orWhere('penerima', $userAktif);
+                        ->orWhere('penerima', $userAktif);
                 })
                 ->where('pengirim', 'LIKE', '%' . $cari1->id_user . '%')
                 ->orWhere('penerima', 'LIKE', '%' . $cari1->id_user . '%')
