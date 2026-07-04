@@ -1,4 +1,3 @@
-#!/usr/bin/env php
 <?php
 
 use Illuminate\Foundation\Application;
@@ -6,13 +5,28 @@ use Symfony\Component\Console\Input\ArgvInput;
 
 define('LARAVEL_START', microtime(true));
 
-// Register the Composer autoloader...
+// Cek apakah aplikasi sedang dalam mode pemeliharaan (maintenance)...
+if (file_exists($maintenance = __DIR__.'/storage/framework/maintenance.php')) {
+    require $maintenance;
+}
+
+// Registrasi Composer Autoloader...
 require __DIR__.'/vendor/autoload.php';
 
-// Bootstrap Laravel and handle the command...
-/** @var Application $app */
+// Memuat Bootstrap Laravel dan menjalankan perintah...
 $app = require_once __DIR__.'/bootstrap/app.php';
 
-$status = $app->handleCommand(new ArgvInput);
+if ($app instanceof Application) {
+    $app->handleCommand(new ArgvInput);
+} else {
+    $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 
-exit($status);
+    $status = $kernel->handle(
+        $input = new ArgvInput,
+        new Symfony\Component\Console\Output\ConsoleOutput
+    );
+
+    $kernel->terminate($input, $status);
+
+    exit($status);
+}
