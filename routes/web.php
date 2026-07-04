@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Storage;
 //     return view('welcome');
 // });
 // Halaman utama / login (Bisa diakses siapa saja)
-Route::get('/', [AuthUser::class, 'index'])->name('login_page.index');
+Route::get('/', [AuthUser::class, 'index'])->name('login_page.index')->name('login');
 Route::post('/login/proses', [AuthUser::class, 'login'])->name('login.proses.index');
 Route::post('/logout', [AuthUser::class, 'logout'])->name('logout.index');
 
