@@ -101,13 +101,13 @@
             // Suntik CSS Baru
             const link = document.createElement('link');
             link.rel = 'stylesheet';
-            link.href = `/storage/css/${halaman}.css`;
+            link.href = `/css/${halaman}.css`;
             link.id = `dynamic-css-${halaman}`;
             document.head.appendChild(link);
 
             // Suntik JS Baru (Gunakan type=module agar variabel antar file tidak bentrok)
             const script = document.createElement('script');
-            script.src = `/storage/js/${halaman}.js`;
+            script.src = `/js/${halaman}.js`;
             // script.type = 'module';
             script.id = `dynamic-js-${halaman}`;
             document.body.appendChild(script);
