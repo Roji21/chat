@@ -39,7 +39,7 @@ class SendOtpMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.otp' 
+            htmlString: view('emails.otp')->render()
         );
     }
 
