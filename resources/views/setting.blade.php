@@ -1,10 +1,61 @@
+<head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <style>
+/* ---------------- CSS SISI KIRI ---------------- */
+.side-panel { background-color: #ffffff; display: flex; flex-direction: column; border-right: 1px solid #111111; }
+.side-header { background-color: #f0f2f5; height: 60px; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; }
+.profile-pic { font-size: 24px; cursor: pointer; }
+
+/* Kode Anda: ID Saya & Dropdown dipindah ke sisi kiri */
+.side-header .id-saya { background: #008069; color: white; padding: 6px 10px; border-radius: 5px; font-size: 12px; cursor: pointer; user-select: none; }
+.menu-user-container { position: relative; }
+.dropdown-menu { display: none; position: absolute; right: 0; top: 32px; background-color: white; min-width: 140px; box-shadow: 0px 4px 12px rgba(0,0,0,0.15); border-radius: 6px; z-index: 999; overflow: hidden; }
+.dropdown-menu a { color: #333; padding: 10px 15px; text-decoration: none; display: block; font-size: 13px; }
+.dropdown-menu a:hover { background-color: #ffebe9; color: #cf222e; }
+
+/* Bagian Search Box */
+.search-box-container { padding: 8px 12px; background-color: #fff; border-bottom: 1px solid #f0f2f5; }
+.search-input-wrapper { background-color: #f0f2f5; border-radius: 8px; padding: 6px 12px; display: flex; align-items: center; gap: 8px; }
+.search-icon { color: #667781; font-size: 14px; }
+.search-input-wrapper input { background: transparent; border: none; outline: none; width: 100%; font-size: 14px; color: #111b21; }
+
+/* Daftar List Obrolan */
+.setting-list { flex: 1; overflow-y: auto; background-color: #fff; overflow: hidden;}
+.setting-item { display: flex; padding: 12px; gap: 12px; cursor: pointer; align-items: center; border-bottom: 1px solid #f0f2f5; transition: background 0.2s; }
+.setting-item:hover { background-color: #f0f2f5; }
+.setting-item.active { background-color: #eae6df; }
+.avatar { width: 45px; height: 45px; background-color: #dfe5e7; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.icon { width: 30px; height: 30px;  border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.setting-info { flex: 1; display: flex; flex-direction: column; gap: 4px; overflow: hidden; }
+.setting-name-row { display: flex; justify-content: space-between; align-items: center; }
+.setting-name { font-weight: 500; color: #111b21; font-size: 15px; }
+
+/* ---------------- CSS SISI KANAN ---------------- */
+.main-chat-area { display: flex; flex-direction: column; background: #efeae2; overflow: hidden; }
+.chat-header { background: #008069; color: white; height: 60px; padding: 10px 10px; display: flex;  justify-content: left; align-items: flex-start; }
+.chat-header .nama-lawan { font-weight: bold; font-size: 26px; padding-left: 10px; padding-top: 4px; }
+.chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+.message-row { display: flex; width: 100%; }
+.message-row.bukan-saya { justify-content: flex-start; }
+.message-row.saya { justify-content: flex-end; }
+.bubble { max-width: 65%; padding: 8px 12px; border-radius: 8px; font-size: 14px; position: relative; box-shadow: 0 1px 1px rgba(0,0,0,0.1); }
+.message-row.bukan-saya .bubble { background: #ffffff; border-top-left-radius: 0; }
+.message-row.saya .bubble { background: #d9fdd3; border-top-right-radius: 0; }
+.time { font-size: 10px; color: #667781; text-align: right; margin-top: 4px; display: block; }
+.chat-input-area { background: #f0f2f5; padding: 10px; display: flex; gap: 10px; }
+.chat-input-area input { flex: 1; padding: 10px; border: none; border-radius: 8px; outline: none; }
+.chat-input-area button { background: #008069; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    
     <!-- ================= SISI KIRI ================= -->
     <div class="side-panel">
         <!-- Bagian Atas Sisi Kiri: Info Profil Saya -->
         <div class="side-header">
-            <div class="avatar" id="ava_id"><img src="{{ asset('storage/img/'.auth()->user()->photo) }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
+            <div class="avatar" id="ava_id"><img src="{{ asset('storage/img/' . $foto) }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
             <div class="menu-user-container">
-                <div class="id-saya" onclick="toggleMenu(event)">ID: {{ auth()->user()->name }} ▾</div>
+                <div class="id-saya" onclick="toggleMenu(event)">ID: {{ $userSekarang }} ▾</div>
                 <div class="dropdown-menu" id="dropdownMenu">
                     <a href="#" onclick="konfirmasiLogout(event)">Logout Account</a>
                 </div>
@@ -52,7 +103,7 @@
     </div>
 
     <!-- ================= SISI KANAN ================= -->
-    <div class="chat-messages" id="dynamic-content-setting">
+    <div class="main-sett-area" id="dynamic-content-setting">
         <!-- Konten dinamis masuk di sini -->
         <div style = "padding: 20px; font-size: 18px; color: #667781;">Pilih menu di sebelah kiri untuk melihat pengaturan.</div>
     </div>
@@ -60,4 +111,8 @@
     @csrf
 </form>
 </div>
+<script>
+
+</script>
+</body>
 

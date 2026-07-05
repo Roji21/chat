@@ -21,11 +21,11 @@
             background: #ffffff;
             padding: 30px 24px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
-            overflow:auto;
         }
 
         /* --- FOTO & TOMBOL UPLOAD --- */
@@ -181,7 +181,7 @@
         <!-- FOTO PROFIL -->
         <div class="avatar-zone">
             <div class="avatar-frame">
-                <img id="profile-img" src="{{ asset('storage/img/'.auth()->user()->photo) }}" alt="Profile">
+                <img id="profile-img" src="{{ asset('storage/img/'.$foto) }}" alt="Profile">
             </div>
             
             <button id="btn-edit-foto" class="edit-trigger">Edit</button>
@@ -200,7 +200,7 @@
         <div class="input-group">
             <label>Name</label>
             <div class="field-container">
-                <input type="text" id="input-name" value="{{ auth()->user()->name }}" disabled class="custom-input">
+                <input type="text" id="input-name" value="{{ $userSekarang }}" disabled class="custom-input">
                 <button onclick="toggleEdit('input-name', this)" class="action-icon">
                     <svg xmlns="http://w3.org" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 20h9"/>
@@ -214,7 +214,7 @@
         <div class="input-group">
             <label>About</label>
             <div class="field-container">
-                <input type="text" id="input-about" value="{{ auth()->user()->about }}" disabled class="custom-input">
+                <input type="text" id="input-about" value="{{ $about }}" disabled class="custom-input">
                 <button onclick="toggleEdit('input-about', this)" class="action-icon">
                     <svg xmlns="http://w3.org" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 20h9"/>

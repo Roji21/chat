@@ -54,18 +54,6 @@ document.onchange = function(e) {
 
     if (e.target === inputFoto && inputFoto.files && inputFoto.files[0]) {
         var fileInput = inputFoto.files[0];
-        const ekstensiDiizinkan = ["image/jpeg", "image/png", "image/jpg", "image/gif"];
-        if (!ekstensiDiizinkan.includes(fileInput.type)) {
-            alert("Format salah! File harus berupa gambar dengan ekstensi: jpeg, png, jpg, atau gif.");
-            inputFoto.value = ""; // Reset input
-            return;
-        }
-        const ukuranMaksimal = 2048 * 1024; // 2048 KB dalam satuan Bytes
-        if (fileInput.size > ukuranMaksimal) {
-            alert("Ukuran file terlalu besar! Maksimal ukuran gambar adalah 2 MB (2048 KB).");
-            fileFoto.value = ""; // Reset input
-            return;
-        }
 
         // 1. Tampilkan preview di browser terlebih dahulu
         var reader = new FileReader();
@@ -98,7 +86,7 @@ document.onchange = function(e) {
             }
         })
         .catch(error => {
-            console.error('Detail Error Server:', error.message);
+            console.error('Error:', error);
         });
     }
 };

@@ -1,5 +1,5 @@
 /* ---------------- CSS SISI KIRI ---------------- */
-.side-panel { height: 100vh; background-color: #ffffff; display: flex; flex-direction: column; border-right: 1px solid #111111; }
+.side-panel { background-color: #ffffff; display: flex; flex-direction: column; border-right: 1px solid #111111; }
 .side-header { background-color: #f0f2f5; height: 60px; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; }
 .profile-pic { font-size: 24px; cursor: pointer; }
 
