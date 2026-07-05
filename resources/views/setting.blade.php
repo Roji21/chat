@@ -2,7 +2,7 @@
     <div class="side-panel">
         <!-- Bagian Atas Sisi Kiri: Info Profil Saya -->
         <div class="side-header">
-            <div class="avatar" id="ava_id"><img src="{{ asset('img/'.auth()->user()->photo) }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
+            <div class="avatar" id="ava_id"><img src="{{ auth()->user()->photo ? asset('img/' . auth()->user()->photo) : asset('img/default.jpeg') }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
             <div class="menu-user-container">
                 <div class="id-saya" onclick="toggleMenu(event)">ID: {{ auth()->user()->name }} ▾</div>
                 <div class="dropdown-menu" id="dropdownMenu">
