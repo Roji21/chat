@@ -181,7 +181,7 @@
         <!-- FOTO PROFIL -->
         <div class="avatar-zone">
             <div class="avatar-frame">
-                <img id="profile-img" src="{{ asset('storage/img/'.auth()->user()->photo) }}" alt="Profile">
+                <img id="profile-img" src="{{ asset('img/'.auth()->user()->photo) }}" alt="Profile">
             </div>
             
             <button id="btn-edit-foto" class="edit-trigger">Edit</button>

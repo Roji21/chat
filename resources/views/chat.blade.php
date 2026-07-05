@@ -2,7 +2,7 @@
     <div class="side-panel">
         <!-- Bagian Atas Sisi Kiri: Info Profil Saya -->
         <div class="side-header">
-            <div class="avatar" id="ava_id"><img src="{{ auth()->user()->photo ? asset('img/' . auth()->user()->photo) : asset('storage/img/default.jpeg') }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
+            <div class="avatar" id="ava_id"><img src="{{ auth()->user()->photo ? asset('img/' . auth()->user()->photo) : asset('img/default.jpeg') }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
             <div class="menu-user-container">
                 <div class="id-saya" onclick="toggleMenu(event)">ID: {{ auth()->user()->name }} ▾</div>
                 <div class="dropdown-menu" id="dropdownMenu">
@@ -29,7 +29,7 @@
     <!-- ================= SISI KANAN: RUANG OBROLAN UTAMA ================= -->
     <div class="main-chat-area">
         <div class="chat-header" id="chat-header">
-            <div class="avatar" id="ava-id"><img src="{{ asset('storage/img/default.jpeg') }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
+            <div class="avatar" id="ava-id"><img src="{{ asset('img/default.jpeg') }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
             <div id="nama-lawan-bicara" class="nama-lawan">💬</div>
         </div>
 
@@ -49,7 +49,7 @@
         </div>
         <div class="profile-content">
             <div class="profile-avatar">
-                <img src="{{ auth()->user()->photo ? asset('storage/img/' . auth()->user()->photo) : asset('storage/img/default.jpeg') }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                <img src="{{ auth()->user()->photo ? asset('img/' . auth()->user()->photo) : asset('img/default.jpeg') }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
             </div>
             <div class="profile-info">
                 <p><strong>Nama:</strong> {{ auth()->user()->name }}</p>
