@@ -124,7 +124,7 @@ class ChatController extends Controller
                 $html .= '<div class="chat-item active chat-click"  data-pengirim="' . e($list[0]->recipient) . '"  data-nama="' . e($namelawan->name) . '" data-foto="' . e($namelawan->photo) . '">
                 <div class="avatar">';
                 if ($namelawan->photo) {
-                    $html .= '<img src="' . asset('storage/img/' . $namelawan->photo) . '" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">';
+                    $html .= '<img src="' . asset('img/' . $namelawan->photo) . '" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">';
                 } else {
                     $html .= '👥';
                 }
@@ -150,7 +150,7 @@ class ChatController extends Controller
                 $html .= '<div class="chat-item active chat-click"  data-pengirim="' . e($list[0]->sender) . '"  data-nama="' . e($namelawan->name) . '" data-foto="' . e($namelawan->photo) . '">
                 <div class="avatar">';
                 if ($namelawan->photo) {
-                    $html .= '<img src="' . asset('storage/img/' . $namelawan->photo) . '" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">';
+                    $html .= '<img src="' . asset('img/' . $namelawan->photo) . '" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">';
                 } else {
                     $html .= '👥';
                 }
@@ -212,7 +212,7 @@ class ChatController extends Controller
                         $namelawan = DB::table('custom_users')->where('number', $list[0]->recipient)->first();
                         $html .= '<div class="chat-item active chat-click"  data-pengirim="' . e($list[0]->recipient) . '"  data-nama="' . e($namelawan->name) . '" data-foto="' . e($namelawan->photo) . '">
                 <div class="avatar">';
-                        $html .= '<img src="' . asset('storage/img/' . $namelawan->photo) . '" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">';
+                        $html .= '<img src="' . asset('img/' . $namelawan->photo) . '" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">';
                         $html .= '</div>';
                         $html .= '<div class="chat-info">
                     <div class="chat-name-row">
@@ -233,7 +233,7 @@ class ChatController extends Controller
                         $namelawan = DB::table('custom_users')->where('number', $list[0]->sender)->first();
                         $html .= '<div class="chat-item active chat-click"  data-pengirim="' . e($list[0]->sender) . '"  data-nama="' . e($namelawan->name) . '" data-foto="' . e($namelawan->photo) . '">
                 <div class="avatar">';
-                        $html .= '<img src="' . asset('storage/img/' . $namelawan->photo) . '" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">';
+                        $html .= '<img src="' . asset('img/' . $namelawan->photo) . '" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">';
                         $html .= '</div>';
                         $html .= '<div class="chat-info">
                     <div class="chat-name-row">
@@ -274,7 +274,7 @@ class ChatController extends Controller
             $data = DB::table('custom_users')->where('number', $contact->contact_number)->first();
             // dd($data);
             $html .= '<div class="contact-item chat-click" <div class="chat-item active chat-click"  data-lawan="' . e($data->number) . '"  data-nama="' . e($contact->custom_name) . '" data-foto="' . e($data->photo) . '" page="notification">
-                        <div class="icon"><img src="' . asset('storage/img/' . $data->photo) . '" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
+                        <div class="icon"><img src="' . asset('img/' . $data->photo) . '" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
                         <div class="contact-info">
                             <div class="contact-name-row">
                                 <div class="contact-name">' . e($contact->custom_name) . '</div>
@@ -327,7 +327,7 @@ class ChatController extends Controller
             $data = DB::table('custom_users')->where('number', $contact->contact_number)->first();
             // dd($data);
             $html .= '<div class="contact-item chat-click" <div class="chat-item active chat-click"  data-lawan="' . e($data->number) . '"  data-nama="' . e($contact->custom_name) . '" data-foto="' . e($data->photo) . '" page="notification">
-                        <div class="icon"><img src="' . asset('storage/img/' . $data->photo) . '" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
+                        <div class="icon"><img src="' . asset('img/' . $data->photo) . '" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
                         <div class="contact-info">
                             <div class="contact-name-row">
                                 <div class="contact-name">' . e($contact->custom_name) . '</div>

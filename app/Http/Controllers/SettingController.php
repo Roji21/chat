@@ -37,7 +37,7 @@ class SettingController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Foto berhasil diperbarui.',
-                'path' => asset('storage/img/' . $namaFile)
+                'path' => asset('img/' . $namaFile)
             ]);
         }
 
