@@ -102,13 +102,13 @@
             // Suntik CSS Baru
             const link = document.createElement('link');
             link.rel = 'stylesheet';
-            link.href = 'storage/css/chat.css'.replace('chat', halaman);
+            link.href = `/css/${halaman}.css`;
             link.id = `dynamic-css-${halaman}`;
             document.head.appendChild(link);
 
             // Suntik JS Baru (Gunakan type=module agar variabel antar file tidak bentrok)
             const script = document.createElement('script');
-            script.src = 'storage/js/chat.js'.replace('chat', halaman);
+            script.src = `/js/${halaman}.js`;
             // script.type = 'module';
             script.id = `dynamic-js-${halaman}`;
             document.body.appendChild(script);
