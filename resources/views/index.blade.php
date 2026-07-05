@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Chat - {{ auth()->user()->name }}</title>
     <style>
         *, *::before, *::after { box-sizing: border-box; }
@@ -51,7 +52,8 @@
         iduser: "{{ auth()->user()->number }}",
         userSekarang: "{{ auth()->user()->name }}",
         lawanBicara: "",
-        lawanfoto: "{{ auth()->user()->photo }}",
+        lawannama:"",
+        lawanfoto: "",
         routeList: "{{ route('chat.list') }}"
         };
 
@@ -67,7 +69,6 @@
             
 
             dynamicContent.innerHTML = `<div style="color:white; padding:20px;">Memuat...</div>`;
-
             try {
                 const response = await fetch(`/${halaman}`);
                 if (!response.ok) throw new Error("Gagal memuat halaman.");
@@ -101,13 +102,13 @@
             // Suntik CSS Baru
             const link = document.createElement('link');
             link.rel = 'stylesheet';
-            link.href = `/css/${halaman}.css`;
+            link.href = '{{ asset('storage/css/chat.css') }}'.replace('chat', halaman);
             link.id = `dynamic-css-${halaman}`;
             document.head.appendChild(link);
 
             // Suntik JS Baru (Gunakan type=module agar variabel antar file tidak bentrok)
             const script = document.createElement('script');
-            script.src = `/js/${halaman}.js`;
+            script.src = '{{ asset('storage/js/chat.js') }}'.replace('chat', halaman);
             // script.type = 'module';
             script.id = `dynamic-js-${halaman}`;
             document.body.appendChild(script);
