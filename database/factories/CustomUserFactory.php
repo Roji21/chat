@@ -10,13 +10,12 @@ class CustomUserFactory extends Factory
     public function definition(): array
     {
         return [
-            'number' => fake()->unique()->numerify('##########'), // Menghasilkan 10 digit angka unik
+            // Kolom 'number' sengaja dikosongkan karena sudah di-handle oleh Model
             'username' => fake()->unique()->userName(),
             'email' => fake()->unique()->safeEmail(),
             'name' => fake()->name(),
-            'password' => Hash::make('password123'),
+            'password' => Hash::make('password123'), // Password dummy default
             'about' => fake()->paragraph(),
-            'photo' => 'default.jpeg', // (Opsional) typo diperbaiki dari .jepg ke .jpeg
         ];
     }
 }
