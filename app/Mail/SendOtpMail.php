@@ -39,7 +39,7 @@ class SendOtpMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.otp', // <- Pastikan di sini tertulis 'emails.otp'
+            text: 'emails.otp', // <- Pastikan di sini tertulis 'emails.otp'
         );
     }
 
