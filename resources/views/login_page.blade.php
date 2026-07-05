@@ -6,6 +6,7 @@
     <title>Chat</title>
     <!-- Menggunakan Font Google Inter agar teks terlihat lebih modern -->
     <link href="https://googleapis.com" rel="stylesheet">
+    <script src="https://unpkg.com"></script>
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
@@ -35,8 +36,13 @@
         /* Elemen Formulir */
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; font-size: 13px; color: #008069; font-weight: 600; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .form-group input { width: 100%; padding: 12px 14px; border: 1px solid #e9edef; background-color: #fff; border-radius: 6px; font-size: 15px; color: #111b21; outline: none; transition: all 0.2s ease; }
+        .form-group input { width: 100%; padding: 12px 40px 12px 12px; border: 1px solid #e9edef; background-color: #fff; border-radius: 6px; font-size: 15px; color: #111b21; outline: none; transition: all 0.2s ease; }
         .form-group input:focus { border-color: #00a884; box-shadow: 0 0 0 3px rgba(0, 168, 132, 0.15); }
+        
+        .password-wrapper {position: relative;width: 100%;}
+        .toggle-password {position: absolute;right: 14px;top: 50%;transform: translateY(-50%);cursor: pointer;color: #8696a0; /* Menyesuaikan palet warna WhatsApp/Teal Anda */display: flex;align-items: center;user-select: none;}
+        .toggle-password:hover { color: #111b21;}
+        .toggle-password svg { width: 20px;height: 20px;}
 
         /* Tombol Utama */
         .btn-submit { width: 100%; background-color: #00a884; color: #ffffff; border: none; padding: 14px; border-radius: 6px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background-color 0.2s; margin-top: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
@@ -68,7 +74,7 @@
         
         <!-- SISI KIRI: Panduan Penggunaan Aplikasi -->
         <div class="left-side">
-            <h1>Chat center</h1>
+            <h1>Chat</h1>
             <ul class="instruction-list">
                 <li>
                     <span class="number">1</span>
@@ -89,7 +95,7 @@
         <div class="right-side">
             <div class="login-box">
                 <h2>Selamat Datang</h2>
-                <p>Silakan masuk ke akun Anda</p>
+                <p>Silakan masuk ke akun Anda </p>
 
                 <!-- Menampilkan Pesan Sukses Setelah Daftar Akun -->
                 @if(session('success'))
@@ -115,7 +121,17 @@
 
                     <div class="form-group">
                         <label for="password">Kata Sandi</label>
-                        <input type="password" id="password" name="password" placeholder="Masukkan password Anda" required>
+                        <div class="password-wrapper">
+                            <input type="password" id="password" name="password" placeholder="Masukkan password Anda" required>
+                            <span class="toggle-password" id="togglePassword">
+                                <svg id="eyeIcon" xmlns="http://w3.org" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+                                    <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+                                    <path d="M6.61 6.61A13.52 13.52 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+                                    <line x1="2" y1="2" x2="22" y2="22"/>
+                                </svg>
+                            </span>
+                        </div>
                     </div>
 
                     <button type="submit" class="btn-submit">Masuk Sekarang</button>
@@ -128,6 +144,53 @@
         </div>
 
     </div>
+    <script>
+        const passwordInput = document.getElementById('password');
+        const togglePassword = document.getElementById('togglePassword');
+        const eyeIcon = document.getElementById('eyeIcon');
 
+        // Menyimpan string struktur SVG mata terbuka dan tertutup secara lokal
+        const eyeOpenSvg = `
+            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+            <circle cx="12" cy="12" r="3"/>
+        `;
+        
+        const eyeClosedSvg = `
+            <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+            <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+            <path d="M6.61 6.61A13.52 13.52 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+            <line x1="2" y1="2" x2="22" y2="22"/>
+        `;
+
+        // Fungsi untuk memunculkan password (Unhide)
+    function showPassword(e) {
+        e.preventDefault(); // Mencegah glitch seleksi teks di browser
+        passwordInput.setAttribute('type', 'text');
+        eyeIcon.innerHTML = eyeOpenSvg; // Ikon berubah jadi mata terbuka saat diintip
+    }
+
+    // Fungsi untuk menyembunyikan kembali password (Hide)
+    function hidePassword(e) {
+        e.preventDefault();
+        passwordInput.setAttribute('type', 'password');
+        eyeIcon.innerHTML = eyeClosedSvg; // Kembali jadi mata dicoret saat dilepas
+    }
+
+    // --- EVENT UNTUK PENGGUNA LAPTOP / DESKTOP (MOUSE) ---
+    // Ketika klik kiri mouse ditekan dan ditahan
+    togglePassword.addEventListener('mousedown', showPassword);
+    // Ketika klik kiri mouse dilepas
+    togglePassword.addEventListener('mouseup', hidePassword);
+    // Ketika kursor mouse tidak sengaja geser keluar dari area ikon saat menahan
+    togglePassword.addEventListener('mouseleave', hidePassword);
+
+    // --- EVENT UNTUK PENGGUNA HP / TABLET (TOUCH LAYAR) ---
+    // Ketika layar mulai disentuh/ditekan jari
+    togglePassword.addEventListener('touchstart', showPassword, { passive: false });
+    // Ketika jari dilepas dari layar
+    togglePassword.addEventListener('touchend', hidePassword, { passive: false });
+    // Ketika sentuhan terganggu sistem (misal muncul notifikasi hp)
+    togglePassword.addEventListener('touchcancel', hidePassword);
+    </script>
 </body>
 </html>
