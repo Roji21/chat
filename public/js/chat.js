@@ -7,6 +7,7 @@ if (typeof config === 'undefined') {
 var iduser = config.iduser;
 var userSekarang = config.userSekarang;
 var lawanBicara = config.lawanBicara;
+var lawannama = config.lawannama;
 var lawanfoto = config.lawanfoto;
 
 // CSRF Token tetap diambil dari meta tag HTML
@@ -18,6 +19,7 @@ var halamanChat = 1;
 var sedangMemuat = false;
 var adaChatLagi = true;
 var pertamaKaliMuat = true;
+var sedangMengirim = false;
 
 function muatChat(isScrollToBottom = false) {
     if (iduser == 0 || sedangMemuat) return;
@@ -86,6 +88,7 @@ function muatlist() {
 }
 
 function kirimPesan() {
+    if (sedangMengirim) return;
     var inputPesan = document.getElementById("isi_pesan");
     var pesan = inputPesan.value;
     if (pesan.trim() === "") return;
@@ -94,7 +97,13 @@ function kirimPesan() {
     formData.append('isi_pesan', pesan);
     formData.append('dari_siapa', iduser);
     formData.append('untuk_siapa', lawanBicara);
-
+    console.log(pesan,iduser,lawanBicara,csrfToken);
+    sedangMengirim = true;
+    setTimeout(() => {
+        // Setelah selesai, kembalikan status menjadi false agar bisa diklik lagi
+        sedangMengirim = false; 
+    }, 500);
+    
     fetch("/chat/kirim", {
         method: 'POST',
         headers: {
@@ -111,6 +120,7 @@ function kirimPesan() {
         // Reset state ke halaman awal & paksa scroll ke paling bawah
         halamanChat = 1;
         adaChatLagi = true;
+        
         muatChat(true); 
     })
     .catch(error => {
@@ -124,6 +134,14 @@ function gas() {
     halamanChat = 1;
     adaChatLagi = true;
     pertamaKaliMuat = true;
+    if(lawannama){
+        var storageUrl = "/storage/img/";
+        var elNamaLawan = document.getElementById('nama-lawan-bicara');
+        if (elNamaLawan) {
+            elNamaLawan.innerText = lawannama;
+        }
+        document.querySelector('#ava-id img').src = storageUrl + lawanfoto;
+    }
     
     muatChat(true); 
     muatlist();
@@ -149,9 +167,14 @@ function gas() {
         });
     }
 
-    document.getElementById("btn_kirim").addEventListener("click", kirimPesan);
+    var btnKirim = document.getElementById("btn_kirim");
+    btnKirim.removeEventListener("click", kirimPesan);
+    btnKirim.addEventListener("click", kirimPesan);
     document.getElementById("isi_pesan").addEventListener("keypress", function(e) {
-        if (e.key === 'Enter') { kirimPesan(); }
+        if (e.key === 'Enter') { 
+            e.preventDefault(); // <--- WAJIB: Menghentikan browser agar tidak melakukan submit ganda
+            kirimPesan(); 
+        }
     });
 };
 
@@ -232,18 +255,25 @@ function filterUser() {
 
 // Event Delegation - Pindah Lawan Bicara
 document.addEventListener('click', function(e) {
-    const chatItem = e.target.closest('.chat-click');
+    const chatItem = e.target.closest('.chat-item');
     
     if (chatItem) {
+        if (sedangMengirim) return;
         const idPengirim = chatItem.getAttribute('data-pengirim');
-        const nama = chatItem.getAttribute('data-nama');
+        const lawannama = chatItem.getAttribute('data-nama');
         const lawanfoto = chatItem.getAttribute('data-foto');
         const storageUrl = "/storage/img/";
         lawanBicara = idPengirim;
+        sedangMengirim = true;
+        setTimeout(() => {
+            // Setelah selesai, kembalikan status menjadi false agar bisa diklik lagi
+            sedangMengirim = false; 
+        }, 500);
+        // console.log(storageUrl, lawanfoto,lawannama);
         
         const elNamaLawan = document.getElementById('nama-lawan-bicara');
         if (elNamaLawan) {
-            elNamaLawan.innerText = nama;
+            elNamaLawan.innerText = lawannama;
         }
         document.querySelector('#ava-id img').src = storageUrl + lawanfoto;
         
