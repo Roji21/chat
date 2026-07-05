@@ -16,26 +16,54 @@ class ChatController extends Controller
     // Menampilkan halaman utama
     public function index(Request $request)
     {
-        return view('index');
+        $user = auth()->user()->number; 
+        $iduser = DB::table('custom_users')->where('number', $user)->first();
+        $id = $iduser->number;
+        $userSekarang = $iduser->name;
+        $riwayatPesan = DB::table('messages')->where('recipient',$user)->get();
+        $lawanBicara = '';
+        $foto= $iduser->photo ;
+        $fotolawan = 'default.jpeg';
+        // dd($foto,$riwayatPesan);
+        return view('index', compact('id','userSekarang', 'lawanBicara','riwayatPesan', 'foto', 'fotolawan'));
+    
     }
     public function chat(Request $request)
     {
-        return view('chat');
+        $user = auth()->user()->number; 
+        $iduser = DB::table('custom_users')->where('number', $user)->first();
+        $id = $iduser->number;
+        $userSekarang = $iduser->name;
+        $riwayatPesan = DB::table('messages')->where('recipient',$user)->get();
+        $lawanBicara = '';
+        $foto= $iduser->photo ;
+        $fotolawan = 'default.jpeg';
+        // dd($iduser,$riwayatPesan);
+        return view('chat', compact('id','userSekarang', 'lawanBicara','riwayatPesan', 'foto', 'fotolawan'));
     }
     public function newchat(Request $request)
     {
-        return view('newchat');
+        $user = session('user_id'); 
+        $iduser = DB::table('user')->where('id_user', $user)->first();
+        $id = $iduser->id_user;
+        $userSekarang = $iduser->nama;
+        $riwayatPesan = DB::table('pesan')->where('pengirim',$user)->get();
+        $lawanBicara = '';
+        $foto= $iduser->foto ;
+        $fotolawan = 'default.jpeg';
+        return view('newchat', compact('id','userSekarang', 'lawanBicara','riwayatPesan', 'foto', 'fotolawan'));
     }
 
     // Menyimpan pesan ke database lewat AJAX POST
     public function kirim(Request $request)
     {
         DB::table('messages')->insert([
-            'sender' => auth()->user()->number,
+            'sender' => $request->dari_siapa,
             'message_text' => $request->isi_pesan,
             'recipient' => $request->untuk_siapa,
-            'sent_time' => now()->setTimezone('Asia/Jakarta')
+            'sent_time' => now(),
         ]);
+
         return response()->json(['status' => 'Sukses']);
     }
 
@@ -56,11 +84,11 @@ class ChatController extends Controller
         }
 
         $allPesan = DB::table('messages')
-            ->where(function ($query) use ($userAktif, $lawan) {
+            ->where(function($query) use ($userAktif, $lawan) {
                 $query->where('sender', $userAktif)
                     ->where('recipient', $lawan);
             })
-            ->orWhere(function ($query) use ($userAktif, $lawan) {
+            ->orWhere(function($query) use ($userAktif, $lawan) {
                 $query->where('sender', $lawan)
                     ->where('recipient', $userAktif);
             })
@@ -73,16 +101,14 @@ class ChatController extends Controller
         foreach ($allPesan as $pesan) {
             $waktu = date('H:i', strtotime($pesan->sent_time));
 
-            if ($pesan->sender == $userAktif) {
-                // dd(pesan->id);
+            if ($pesan->recipient == $userAktif) {
                 $html .= '<div class="message-row saya">
                             <div class="bubble">' . e($pesan->message_text) . '<span class="time">' . $waktu . '</span></div>
-                          </div>';
-            } else if ($pesan->sender == $lawan) {
-                // dd(pesan->id);
+                        </div>';
+            } else if($pesan->recipient == $lawan) {
                 $html .= '<div class="message-row bukan-saya">
                             <div class="bubble">' . e($pesan->message_text) . '<span class="time">' . $waktu . '</span></div>
-                          </div>';
+                        </div>';
             }
         }
 
@@ -96,79 +122,53 @@ class ChatController extends Controller
     public function listpesan(Request $request)
     {
         $userAktif = auth()->user()->number;
-        // 1. Buat subquery untuk mencari ID pesan terakhir dari setiap lawan bicara
-        $subQuery = DB::table('messages')
-            ->select(DB::raw('MAX(id) as max_id'))
-            ->where(function ($query) use ($userAktif) {
-                $query->where('sender', '?')
-                    ->orWhere('recipient', '?');
-            })
-            ->groupBy(DB::raw("IF(recipient = ?, sender, recipient)"))
-            ->setBindings([$userAktif, $userAktif, $userAktif]); // Isi binding untuk 'sender', 'recipient', dan 'IF'
-
-        // 2. Main query untuk mengambil data lengkap berdasarkan ID dari subquery di atas
-        $chatList = DB::table('messages as m')
-            ->joinSub($subQuery, 'dm', function ($join) {
-                $join->on('m.id', '=', 'dm.max_id');
-            })
-            ->orderBy('m.sent_time', 'desc')
-            ->get();
+        $subQueryMaxId = DB::table('messages')
+            ->select(DB::raw('MAX(id) as id'))
+            ->where('recipient', $userAktif)
+            ->orWhere('sender', $userAktif)
+            ->groupBy(DB::raw("IF(recipient = '$userAktif', sender, recipient)"))->get();
         $html = '';
-        // dd(auth()->user()->number,$chatList);
-        foreach ($chatList as $pesan) {
-            $list = DB::table('messages')->where('id', $pesan->id)->get();
+        // dd(auth()->user());
+        foreach ($subQueryMaxId as $pesan) {
+            $list = DB::table('messages')->where('id',$pesan->id)->get();
             // dd($list[0]->recipient, $userAktif);
-            if ($userAktif != $list[0]->recipient) {
+            if($userAktif!=$list[0]->recipient){
                 $namelawan = DB::table('custom_users')->where('number', $list[0]->recipient)->first();
                 // dd($namelawan);
-                $html .= '<div class="chat-item active chat-click"  data-pengirim="' . e($list[0]->recipient) . '"  data-nama="' . e($namelawan->name) . '" data-foto="' . e($namelawan->photo) . '">
+                $html .= '<div class="chat-item active chat-click"  data-pengirim="'.e($list[0]->recipient).'"  data-nama="'.e($namelawan->name).'" data-foto="'.e($namelawan->photo).'">
                 <div class="avatar">';
                 if ($namelawan->photo) {
-                    $html .= '<img src="' . asset('storage/img/' . $namelawan->photo) . '" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">';
+                    $html .= '<img src="' . asset('storage/img/'. $namelawan->photo) . '" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">';
                 } else {
-                    $html .= '👥';
+                    $html .= '👥'; 
                 }
                 $html .= '</div>';
                 $html .= '<div class="chat-info">
                     <div class="chat-name-row">
-                        <span class="contact-name">' . e($namelawan->name) . '</span>
-                        <span class="chat-time">' . e(
-                    \Carbon\Carbon::parse($list[0]->sent_time)->isToday()
-                        ? \Carbon\Carbon::parse($list[0]->sent_time)->format('H:i')
-                        : (\Carbon\Carbon::parse($list[0]->sent_time)->isYesterday()
-                            ? 'Yesterday'
-                            : \Carbon\Carbon::parse($list[0]->sent_time)->format('d/m/Y'))
-                ) .
-                    '</span>
+                        <span class="contact-name">'.e($namelawan->name).'</span>
+                        <span class="chat-time">'.e($list[0]->sent_time).'</span>
                     </div>
-                    <div class="chat-preview">' . e($list[0]->message_text) . '</div>
+                    <div class="chat-preview">'.e($list[0]->message_text).'</div>
                 </div>
             </div>';
-            } else {
+            }else {
                 $namelawan = DB::table('custom_users')->where('number', $list[0]->sender)->first();
                 // dd($namelawan);
-                $html .= '<div class="chat-item active chat-click"  data-pengirim="' . e($list[0]->sender) . '"  data-nama="' . e($namelawan->name) . '" data-foto="' . e($namelawan->photo) . '">
+                $html .= '<div class="chat-item active chat-click"  data-pengirim="'.e($list[0]->sender).'"  data-nama="'.e($namelawan->name).'" data-foto="'.e($namelawan->photo).'">
                 <div class="avatar">';
                 if ($namelawan->photo) {
-                    $html .= '<img src="' . asset('storage/img/' . $namelawan->photo) . '" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">';
+                    $html .= '<img src="' . asset('storage/img/'. $namelawan->photo) . '" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">';
                 } else {
-                    $html .= '👥';
+                    $html .= '👥'; 
                 }
                 // dd($namelawan);
                 $html .= '</div>';
                 $html .= '<div class="chat-info">
                     <div class="chat-name-row">
-                        <span class="contact-name">' . e($namelawan->name) . '</span>
-                        <span class="chat-time">' . e(
-                    \Carbon\Carbon::parse($list[0]->sent_time)->isToday()
-                        ? \Carbon\Carbon::parse($list[0]->sent_time)->format('H:i')
-                        : (\Carbon\Carbon::parse($list[0]->sent_time)->isYesterday()
-                            ? 'Yesterday'
-                            : \Carbon\Carbon::parse($list[0]->sent_time)->format('d/m/Y'))
-                ) .
-                    '</span>
+                        <span class="contact-name">'.e($namelawan->name).'</span>
+                        <span class="chat-time">'.e($list[0]->sent_time).'</span>
                     </div>
-                    <div class="chat-preview">' . e($list[0]->message_text) . '</div>
+                    <div class="chat-preview">'.e($list[0]->message_text).'</div>
                 </div>
             </div>';
             }
@@ -179,120 +179,87 @@ class ChatController extends Controller
     {
         $userAktif = $request->query('user_aktif');
         $filter = $request->query('filter');
-        $html = '';
-        $index = 0;
-        $lanjut = 0;
-        if ($filter) {
-            $cari = DB::table('custom_users')->select(DB::raw('number'))->where('name', 'LIKE', '%' . $filter . '%')->get();
-            foreach ($cari as $cari1) {
-                $lanjut = 0;
-                try {
-                    $subQueryMaxId = DB::table('messages')
-                        ->select(DB::raw('MAX(id) as id'))
-                        ->where(function ($query) use ($userAktif, $cari1) {
-                            $query->where('sender', $cari1->number)
-                                ->where('recipient', $userAktif);
-                        })
-                        ->orWhere(function ($query) use ($userAktif, $cari1) {
-                            $query->where('sender', $userAktif)
-                                ->where('recipient', $cari1->number);
-                        })->get();
-                    $lanjut = 1;
-                } catch (\Throwable $e) { // Menangkap segala jenis eror PHP / fatal crash lainnya
-                    $lanjut = 0;
-                }
-                $hasilId = $subQueryMaxId[0]->id ?? null;
-                if (is_null($hasilId) && $lanjut = 1) {
-                    continue;
+        $subQueryMaxId;
+        if(!$filter){
+            $subQueryMaxId = DB::table('pesan')
+                ->select(DB::raw('MAX(id) as id'))
+                ->where('pengirim', $userAktif)
+                ->orWhere('penerima', $userAktif)
+                ->groupBy(DB::raw("IF(pengirim = '$userAktif', penerima, pengirim)"))->get();
+        } else {
+            $cari = DB::table('user')->where('nama', 'LIKE', '%' . $filter . '%')->get();
+            // dd($cari, $filter);
+            $html = '';
+        foreach($cari as $cari1){
+            $subQueryMaxId = DB::table('pesan')
+                ->select(DB::raw('MAX(id) as id'))
+                ->where(function($query) use ($userAktif) {
+                    $query->where('pengirim', $userAktif)
+                        ->orWhere('penerima', $userAktif);
+                })
+                ->where('pengirim', 'LIKE', '%' . $cari1->id_user . '%')
+                ->orWhere('penerima', 'LIKE', '%' . $cari1->id_user . '%')
+                ->groupBy(DB::raw("IF(pengirim = '$userAktif', penerima, pengirim)"))
+                ->get();
+            // dd($subQueryMaxId);
+            $list = DB::table('pesan')->where('id',$subQueryMaxId[0]->id)->get();
+            // dd($list);
+            if ($cari1->id_user == $userAktif) {
+                continue; // Skip jika user yang dicari adalah user aktif
+            }else if($userAktif!=$list[0]->penerima){
+                $namelawan = DB::table('user')->where('id_user', $list[0]->penerima)->first();
+                $html .= '<div class="chat-item active chat-click"  data-pengirim="'.e($list[0]->penerima).'"  data-nama="'.e($namelawan->nama).'" data-foto="'.e($namelawan->foto).'">
+                <div class="avatar">';
+                if ($namelawan->foto) {
+                    $html .= '<img src="' . asset('storage/img/'. $namelawan->foto) . '" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">';
                 } else {
-                    $list = DB::table('messages')->where('id', $subQueryMaxId[0]->id)->get();
-                    if ($cari1->number == $userAktif) {
-                        continue; // Skip jika user yang dicari adalah user aktif
-                    } else if ($userAktif != $list[0]->recipient) {
-                        $namelawan = DB::table('custom_users')->where('number', $list[0]->recipient)->first();
-                        $html .= '<div class="chat-item active chat-click"  data-pengirim="' . e($list[0]->recipient) . '"  data-nama="' . e($namelawan->name) . '" data-foto="' . e($namelawan->photo) . '">
-                <div class="avatar">';
-                        $html .= '<img src="' . asset('storage/img/' . $namelawan->photo) . '" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">';
-                        $html .= '</div>';
-                        $html .= '<div class="chat-info">
-                    <div class="chat-name-row">
-                        <span class="contact-name">' . e($namelawan->name) . '</span>
-                        <span class="chat-time">' . e(
-                            \Carbon\Carbon::parse($list[0]->sent_time)->isToday()
-                                ? \Carbon\Carbon::parse($list[0]->sent_time)->format('H:i')
-                                : (\Carbon\Carbon::parse($list[0]->sent_time)->isYesterday()
-                                    ? 'Yesterday'
-                                    : \Carbon\Carbon::parse($list[0]->sent_time)->format('d/m/Y'))
-                        ) .
-                            '</span>
-                    </div>
-                    <div class="chat-preview">' . e($list[0]->message_text) . '</div>
-                </div>
-            </div>';
-                    } else {
-                        $namelawan = DB::table('custom_users')->where('number', $list[0]->sender)->first();
-                        $html .= '<div class="chat-item active chat-click"  data-pengirim="' . e($list[0]->sender) . '"  data-nama="' . e($namelawan->name) . '" data-foto="' . e($namelawan->photo) . '">
-                <div class="avatar">';
-                        $html .= '<img src="' . asset('storage/img/' . $namelawan->photo) . '" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">';
-                        $html .= '</div>';
-                        $html .= '<div class="chat-info">
-                    <div class="chat-name-row">
-                        <span class="contact-name">' . e($namelawan->name) . '</span>
-                        <span class="chat-time">' . e(
-                            \Carbon\Carbon::parse($list[0]->sent_time)->isToday()
-                                ? \Carbon\Carbon::parse($list[0]->sent_time)->format('H:i')
-                                : (\Carbon\Carbon::parse($list[0]->sent_time)->isYesterday()
-                                    ? 'Yesterday'
-                                    : \Carbon\Carbon::parse($list[0]->sent_time)->format('d/m/Y'))
-                        ) .
-                            '</span>
-                    </div>
-                    <div class="chat-preview">' . e($list[0]->message_text) . '</div>
-                </div>
-            </div>';
-                    }
+                    $html .= '👥'; 
                 }
+                $html .= '</div>';
+                $html .= '<div class="chat-info">
+                    <div class="chat-name-row">
+                        <span class="contact-name">'.e($namelawan->nama).'</span>
+                        <span class="chat-time">'.e($list[0]->waktu_kirim).'</span>
+                    </div>
+                    <div class="chat-preview">'.e($list[0]->isi_pesan).'</div>
+                </div>
+            </div>';
+            }else {
+                $namelawan = DB::table('user')->where('id_user', $list[0]->pengirim)->first();
+                $html .= '<div class="chat-item active chat-click"  data-pengirim="'.e($list[0]->pengirim).'"  data-nama="'.e($namelawan->nama).'" data-foto="'.e($namelawan->foto).'">
+                <div class="avatar">';
+                if ($namelawan->foto) {
+                    $html .= '<img src="' . asset('storage/img/'. $namelawan->foto) . '" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">';
+                } else {
+                    $html .= '👥'; 
+                }
+                $html .= '</div>';
+                $html .= '<div class="chat-info">
+                    <div class="chat-name-row">
+                        <span class="contact-name">'.e($namelawan->nama).'</span>
+                        <span class="chat-time">'.e($list[0]->waktu_kirim).'</span>
+                    </div>
+                    <div class="chat-preview">'.e($list[0]->isi_pesan).'</div>
+                </div>
+            </div>';
             }
-            return response($html);
-        }
-    }
-    public function searchnew(Request $request) {
-        $filter = $request->query('filter');
-        $userAktif = auth()->user()->number;
-        $subQuery = DB::table('contacts')
-            ->where(function ($query) use ($userAktif, $filter) {
-                $query->where('user_number', $userAktif)
-                    ->where('custom_name','LIKE', '%' . $filter . '%');
-            })
-            ->orWhere(function ($query) use ($userAktif, $filter) {
-                $query->where('user_number', $userAktif)
-                    ->where('contact_number','LIKE', '%' . $filter . '%');
-            })->get();
-        $html = '';
-        $hurufAwal = '';
-        foreach ($subQuery as $contact) {
-            $data = DB::table('custom_users')->where('number', $contact->contact_number)->first();
-            // dd($data);
-            $html .= '<div class="contact-item chat-click" <div class="chat-item active chat-click"  data-lawan="' . e($data->number) . '"  data-nama="' . e($contact->custom_name) . '" data-foto="' . e($data->photo) . '" page="notification">
-                        <div class="icon"><img src="' . asset('storage/img/' . $data->photo) . '" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
-                        <div class="contact-info">
-                            <div class="contact-name-row">
-                                <div class="contact-name">' . e($contact->custom_name) . '</div>
-                            </div>
-                        </div>
-                    </div>';
+            }
         }
         return response($html);
+    }
+    public function searchnew(Request $request)
+    {
+        
     }
 
     public function listcontact(Request $request)
     {
-        $userAktif = auth()->user()->number;
-        $subQuery = DB::table('contacts')->where('user_number', $userAktif)->get();
-        // dd($subQuery, $userAktif);
+        $userAktif = session('user_id');
+        $subQuery = DB::table('contacts')->where('uid', $userAktif)->get();
+            // dd($subQuery, $userAktif);
         $html = '';
         $hurufAwal = '';
-        $html .= '<div class="contact-item"  page="profile">
+        $html .='<div class="contact-item"  page="profile">
                     <div class="icon"><svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M18.5 19.5H14.5" stroke="#292D32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                         <path d="M16.5 21.5V17.5" stroke="#292D32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -315,22 +282,20 @@ class ChatController extends Controller
                 </div>';
         foreach ($subQuery as $contact) {
             $huruf_pertama = strtoupper(substr($contact->custom_name, 0, 1));
-            // dd($contact->custom_name,$huruf_pertama);
             if ($huruf_pertama !== $hurufAwal) {
                 $html .= '<div class="contact-header">
                             <div class="contact-info">
-                                <div class="contact-header-name">' . e($huruf_pertama) . '</div>
+                                <div class="contact-header-name">'. e($huruf_pertama) . '</div>
                             </div>
                         </div>';
                 $hurufAwal = $huruf_pertama;
             }
-            $data = DB::table('custom_users')->where('number', $contact->contact_number)->first();
-            // dd($data);
-            $html .= '<div class="contact-item chat-click" <div class="chat-item active chat-click"  data-lawan="' . e($data->number) . '"  data-nama="' . e($contact->custom_name) . '" data-foto="' . e($data->photo) . '" page="notification">
-                        <div class="icon"><img src="' . asset('storage/img/' . $data->photo) . '" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
+            $data = DB::table('user')->where('id_user', $contact->contact_uid)->first();
+            $html .= '<div class="contact-item"  page="notification">
+                        <div class="icon"><img src="' . asset('storage/img/'. $data->foto) . '" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"></div>
                         <div class="contact-info">
                             <div class="contact-name-row">
-                                <div class="contact-name">' . e($contact->custom_name) . '</div>
+                                <div class="contact-name">'.e($data->nama).'</div>
                             </div>
                         </div>
                     </div>';
